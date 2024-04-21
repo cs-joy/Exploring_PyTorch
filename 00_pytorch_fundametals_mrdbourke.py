@@ -742,5 +742,40 @@ output = torch.matmul(tensor_A, tensor_B.T)
 print(output)
 print(f"\nOutput shape: {output.shape}")
 
+"""### Finding the min, max, mean, sum etc (tensor aggregation)"""
 
+# Create a tensor
+x = torch.arange(0, 100, 10)
+x, x.dtype
+
+# Find the min
+torch.min(x), x.min()
+
+# Find the max
+torch.max(x), x.max()
+
+# Find the mean **note: the torch.mean() function requires a tensor of float32 datatype to work
+torch.mean(x.type(torch.float32)), x.type(torch.float32).mean()
+
+# Find the sum
+torch.sum(x), x.sum()
+
+"""### Finding the positional min and max of tensors"""
+
+x = torch.arange(1, 100, 10)
+x
+
+# Find the position in tensor that has the minimum value with `argmin()` -> returns index position of target tensor where the minimum value occurs.
+x.argmin()
+
+# check the value of the position
+print(f"x.argmin().item() = {x.argmin().item()}\n")
+x[x.argmin().item()]
+
+# Find the position in tensor that has the maximum value with `argmax()`
+x.argmax()
+
+# check the value of the position
+print(f"x.armax().item() = {x.argmax().item()}\n")
+x[x.argmax().item()]
 
