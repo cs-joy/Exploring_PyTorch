@@ -938,3 +938,64 @@ x_original[0, 0, 0], x_permuted[0, 0, 0]
 x_original[0, 0, 0] = .4507
 x_permuted[0, 0, 0]
 
+"""# Indexing (selecting data from tensors)
+
+Indexing with PyTorch is similar to index with NumPy
+"""
+
+# Create a tensor
+
+import torch
+x = torch.arange(1, 10).reshape(1, 3, 3)
+x, x.shape, x.ndim
+
+# Let's index on our new tensor
+x[0]
+
+# Let's index on the middke brcket (dim=1)
+x[0][0]  # "x[0, 0]" is same as "x[0][0]"
+
+# Let's index on the most inner bracket (last dimension)
+x[0][0][0]
+
+x[0][1][1]
+
+# challange to find number 9 from the "x" tensor
+x[0][2][2]
+
+# ":" to select "all" of a target dimension
+x[:, 0]
+
+x[0,2,1]
+
+t = torch.rand(5, 3, 6, 2)
+t
+
+t.ndim, t.shape
+
+t[4]
+
+t.shape
+
+t
+
+t[0]
+
+t[1]
+
+t[2]
+
+t[3]
+
+t[3][2]
+
+t[3][2][5], t[3, 2, 5]
+
+t[3][2][5][1], t[3, 2, 5, 1]
+
+t[:, 2, 5, 1]
+
+t[:3, 2, 5, 1]
+
+t[3:, 2, 5, 1]
+
