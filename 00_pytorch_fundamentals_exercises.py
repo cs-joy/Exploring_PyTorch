@@ -258,6 +258,27 @@ exploring_logspace
 exploring_logspace = torch.logspace(start=0.1, end=1.0, steps=5)
 exploring_logspace
 
+'''
+calculation of `torch.logspace(start=0.1, end=1.0, steps=10)`
+
+values of the return tensor are:
+
+1st_value  = base ** (start + (steps - 10) * (end - start / steps - 1))
+2nd_value  = base ** (start + (steps - 9) * (end - start / steps - 1))
+3rd_value  = base ** (start + (steps - 8) * (end - start / steps - 1))
+4th_value  = base ** (start + (steps - 7) * (end - start / steps - 1))
+5th_value  = base ** (start + (steps - 6) * (end - start / steps - 1))
+6th_value  = base ** (start + (steps - 5) * (end - start / steps - 1))
+7th_value  = base ** (start + (steps - 4) * (end - start / steps - 1))
+6th_value  = base ** (start + (steps - 3) * (end - start / steps - 1))
+8th_value  = base ** (start + (steps - 2) * (end - start / steps - 1))
+10th_value = base ** (start + (steps - 1) * (end - start / steps - 1))
+
+notice: for user defined purposes if we mention `i` instead of (steps - 10, 9, 8, 7, 6, 5, 4, 3, 2, 1) that means the index of the `i` will be start `0` to `steps - 1`
+        as for this example 0 to 9 because `steps = 10`
+'''
+
+
 exploring_logspace = torch.logspace(start=0.1, end=1.0, steps=10)
 exploring_logspace
 
