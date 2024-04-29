@@ -263,7 +263,7 @@ calculation of `torch.logspace(start=0.1, end=1.0, steps=10)`
 
 values of the return tensor are:
 
-1st_value  = base ** (start + (steps - 10) * (end - start / steps - 1))
+1st_value  = base ** (start + (steps - 10) * (end - start / steps - 1)) [equivalent of (base ** start), if you put those values in the equation you will understand why it's equivalent with `base ** start`]
 2nd_value  = base ** (start + (steps - 9) * (end - start / steps - 1))
 3rd_value  = base ** (start + (steps - 8) * (end - start / steps - 1))
 4th_value  = base ** (start + (steps - 7) * (end - start / steps - 1))
@@ -272,10 +272,12 @@ values of the return tensor are:
 7th_value  = base ** (start + (steps - 4) * (end - start / steps - 1))
 6th_value  = base ** (start + (steps - 3) * (end - start / steps - 1))
 8th_value  = base ** (start + (steps - 2) * (end - start / steps - 1))
-10th_value = base ** (start + (steps - 1) * (end - start / steps - 1))
+10th_value = base ** (start + (steps - 1) * (end - start / steps - 1)) [equivalent of (base ** end), if you put those values in the equation you will understand why it's equivalent with `base ** end`]
 
 notice: for user defined purposes if we mention `i` instead of (steps - 10, 9, 8, 7, 6, 5, 4, 3, 2, 1) that means the index of the `i` will be start `0` to `steps - 1`
         as for this example 0 to 9 because `steps = 10`
+
+source: https://pytorch.org/docs/stable/generated/torch.logspace.html#torch.logspace
 '''
 
 
