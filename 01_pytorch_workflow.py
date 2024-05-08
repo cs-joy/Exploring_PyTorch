@@ -136,13 +136,60 @@ class LinearRegressionModel(nn.Module): # -> https://pytorch.org/docs/stable/gen
   def __init__(self):
     super().__init__()
     self.weights = nn.Parameter(torch.randn(1, requires_grad=True, dtype=float))
-    self.bias = nn.Parameter(torch.rand(1,
-                                        requires_grad=True,
-                                        dtype=float))
+    self.bias = nn.Parameter(torch.rand(1, requires_grad=True, dtype=float))
 
-    # Forward method to define the computation in the model
-    def forward(self, x: torch.Tensor) -> torch.Tensor: # "x" is the input data
-      return self.weights * x + self.bias # this is the linear regression formula
+  # Forward method to define the computation in the model
+  def forward(self, x: torch.Tensor) -> torch.Tensor: # "x" is the input data
+    return self.weights * x + self.bias # this is the linear regression formula
 
+"""# PyTorch model buidling essential
 
+* `torch.nn` - contains all of the buildings for computational graphs (a neural network can be considered a computational graph)
+* `torch.nn.Parameter` - what parameters should our model try and learn, often a PyTorch layer from `torch.nn` will set these for us
+* `torch.nn.Module` - The base class for all neural network modules, if you subclass it, you should overwrite `forward()`
+* `torch.optim` - this where the optimizers in PyTorch live, they will help with gradient descent
+* `def forward()` - All `nn.Module` subclasses require you to overwrite `forward()`, this method defines what happens in the forward computation
+
+# [PyTorch CheatSheet](https://pytorch.org/tutorials/beginner/ptcheat.html)
+
+### Check the contents of our PyTorch model
+
+Now we've created a model, let's see what's inside...
+
+So we can check our model parameters or what's inside our model using `.parameters()`
+"""
+
+# Create a random seed
+torch.manual_seed(42)
+
+# Create an instance of the model (this is a subclass of nn.Module)
+model_0 = LinearRegressionModel()
+
+# model_0
+# model_0.parameters()
+list(model_0.parameters())
+
+# List named parameters
+model_0.state_dict() # return dictionary of the parameters of our model (LinearRegressionModel)
+
+"""### Making prediction using `torch.inference_mode()`
+
+To check our model's predictive power, let's see how it well ut predicts `y_test` based on `X_test`.
+
+When we pass data through our model, it's going to run it through the `forward()` method.
+"""
+
+X_test, y_test
+
+# Make predictions with model
+with torch.inference_mode():
+  y_preds = model_0(X_test)
+
+y_preds
+
+# let's look at the `y_test`
+y_test
+
+# visualize
+plot_predictions(predictions=y_preds)
 
