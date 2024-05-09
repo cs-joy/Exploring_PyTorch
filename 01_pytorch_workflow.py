@@ -271,11 +271,13 @@ A couple of things we need in a training loop:
 1. Forward pass (this involves data moving through our model's `forward()` functions) to make some predictions on data - also called forward propagation
 2. Calculate the loss (compare forward pass predictions to ground truth labels)
 3. Optimizer zero grad
-4. Loss backward - move backwards through the network to calculate the gradients of each of the parameters of our model with respect to the loss (**backpropagation**)
-5. Optimizer step - use the optimizer to adjust our model's parameters to try and improve the loss (**gradient descent**)
+4. Loss backward - move backwards through the network to calculate the gradients of each of the parameters of our model with respect to the loss (**backpropagation** - https://www.youtube.com/watch?v=tIeHLnjs5U8)
+5. Optimizer step - use the optimizer to adjust our model's parameters to try and improve the loss (**gradient descent** - https://www.youtube.com/watch?v=IHZwWFHWa-w)
 """
 
 list(model_0.parameters()) # in the model we build future, likely be set automatically rather than you setting them explicitly, like we've done when you create `model_0`
+
+torch.manual_seed(42)
 
 # An epoch is one loop through the data... (this is a hyper parameter because we've set it ourselves )
 epochs = 1
@@ -291,6 +293,7 @@ for epoch in range(epochs):
 
   # 2. Calulcate the loos
   loss = loss_fn(y_pred, y_train) # torch.L1Loss(input, target)
+  print(f"Loss: {loss}")
 
   # 3. Optimizer zero grad
   optimizer.zero_grad()
@@ -301,7 +304,83 @@ for epoch in range(epochs):
   # 5. Step the optimizert (perform gradient descent)
   optimizer.step() # by default how the optimizer changes will accumulate through the loop, so... we have to zero them in step 3 for the next iteration of the loop
 
+  ### Testing
+  model_0.eval() # turns off graident tracking - # `eval()` sets the PyTorch model to evaluation mode, disabling operations like dropout, useful for inference and testing. This method plays a pivotal role in ensuring consistent and reliable model behavior during inference and testing.
+
+print(model_0.state_dict())
+
+'''
+#### practice
+
+epochs = 10
+for epoch in range(epochs):
+  # set the model in training mode
+  model_0.train()
+
+  # 1. Forward pass
+  y_pred = model_0(X_train)
+
+  # 2. Calculate the loss
+  loss = loss_fn(y_pred, y_train)
+
+  # 3. Optimizer zero grid
+  optimizer.zero_grad()
+
+  # 4. backward
+  loss.backward()
+
+  # 5. Optimizer step
+  optimizer.step()
+
+  # Testing
+  model_0.eval()
+'''
+
+model_0.state_dict()
+
+with torch.inference_mode():
+  y_preds_new = model_0(X_test)
+
+plot_predictions(predictions=y_preds)
+
+plot_predictions(predictions=y_preds_new)
 
 
-  model_0.eval() # turns off graident tracking
+
+"""### Practice"""
+
+torch.manual_seed(42)
+epochs = 100
+for epoch in range(epochs):
+  # set the model in training mode
+  model_0.train()
+
+  # 1. Forward pass
+  y_pred = model_0(X_train)
+
+  # 2. Calculate the loss
+  loss = loss_fn(y_pred, y_train)
+
+  print(f"Loss: {loss}")
+
+  # 3. Optimizer zero grid
+  optimizer.zero_grad()
+
+  # 4. backward
+  loss.backward()
+
+  # 5. Optimizer step
+  optimizer.step()
+
+  # Testing
+  model_0.eval()
+
+  print(model_0.state_dict())
+
+with torch.inference_mode():
+  y_pred_new_practice = model_0(X_test)
+
+plot_predictions(predictions=y_preds_new)
+
+plot_predictions(predictions=y_pred_new_practice)
 
