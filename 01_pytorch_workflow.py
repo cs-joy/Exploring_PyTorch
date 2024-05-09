@@ -181,15 +181,127 @@ When we pass data through our model, it's going to run it through the `forward()
 
 X_test, y_test
 
+# with our using `inference_mode()` method
+y_preds = model_0(X_test)
+y_preds
+
 # Make predictions with model
-with torch.inference_mode():
+
+'''
+## You can also do something similar with `torch.no_grad(), however `torch.inference_mode()` if preferred.
+
+with torch.no_grad():
   y_preds = model_0(X_test)
 
 y_preds
+'''
+
+with torch.inference_mode(): # `torch.inference_mode()` disable to calculate or track `grad`
+  y_preds = model_0(X_test)
+
+y_preds
+
+"""See more on inference mode here - https://twitter.com/PyTorch/status/1437838231505096708?lang=en"""
 
 # let's look at the `y_test`
 y_test
 
 # visualize
 plot_predictions(predictions=y_preds)
+
+"""## 3. Train model
+
+The whole idea of training is for a model to move from some *unknown* parameters (these maybe random) to some *known* parameters.
+
+Or in other words, from a poor representation of the data to a better representation of the data.
+
+
+One way to measure how poor or how wrong your models predictions are is to use a [**loss functions**](https://pytorch.org/docs/stable/nn.html#loss-functions)
+
+* Note: Loss function maybe also be called cost function or criterion in different areas. For our case, we're going to refer to it as a loss function.
+
+
+Things we need to train::
+
+* [**Loss Function:**](https://pytorch.org/docs/stable/generated/torch.nn.L1Loss.html#torch.nn.L1Loss) A function to measure how wrong your model predictions are to the ideal outputs, lower is better.
+
+* [**Optimizer:**](https://pytorch.org/docs/stable/optim.html) Takes into account the loss of a model and adjusts the model's parameter's (e.g. weight and bias in our case) to improve the `loss function`.
+  * `params`: the model parameters you'd like to optimize of example `params=model_0.parameters()`
+  * `lr` (learning rate): the learning rate is a hyperparameter that defines how big/small the optimizer changes the parameters with each step (a small `lr` results in small changes, a large `lr` results in large changes)
+
+And specifically for PyTorch, we need:
+* A training loop
+* A testing loop
+"""
+
+list(model_0.parameters())
+
+# Check out our model's parameters (a parameters is a value that the model sets itself)
+model_0.state_dict()
+
+"""#### Extra Curriculum
+**Reading** the documentation:
+* https://pytorch.org/docs/stable/generated/torch.nn.L1Loss.html#torch.nn.L1Loss
+* https://pytorch.org/docs/stable/optim.html
+
+* Note:
+  * the small of the learning rate (lr), the small of the change in parameter
+  * the larger of the learning rate (lr), the larger of the change in parameter
+"""
+
+# Setup a loss function
+loss_fn = nn.L1Loss()
+
+# Setup an optimizer (stochastic gradient descent) #https://pytorch.org/docs/stable/generated/torch.optim.SGD.html#torch.optim.SGD
+optimizer = torch.optim.SGD(params=model_0.parameters(),
+                            lr= 0.01) # lr = learning rate = possibly the most important hyperparameter you can set
+
+"""**Q:** Which loss function and optimizer should i use?
+
+**A:** This will problem specific. But with experience, you will get an idea of what works and what doesn't with yoour particular problem set.
+
+For examle, for a Regression problem (like ours), a loss function of `nn.L1Loss()` and an optimizer like `torch.optim.SGD()` will suffice.
+
+But for a classification problem like classifying whether a photo is of dog or a cat, you'll likely want to use a loss function of `nn.BCELoss()` (binary cross entropy loss).
+
+### Building a training loop (and a testing loop) in PyTorch
+
+A couple of things we need in a training loop:
+0. Loop through the data and do...
+1. Forward pass (this involves data moving through our model's `forward()` functions) to make some predictions on data - also called forward propagation
+2. Calculate the loss (compare forward pass predictions to ground truth labels)
+3. Optimizer zero grad
+4. Loss backward - move backwards through the network to calculate the gradients of each of the parameters of our model with respect to the loss (**backpropagation**)
+5. Optimizer step - use the optimizer to adjust our model's parameters to try and improve the loss (**gradient descent**)
+"""
+
+list(model_0.parameters()) # in the model we build future, likely be set automatically rather than you setting them explicitly, like we've done when you create `model_0`
+
+# An epoch is one loop through the data... (this is a hyper parameter because we've set it ourselves )
+epochs = 1
+
+### Training
+# 0. Loop through the data
+for epoch in range(epochs):
+  # Set the model to training mode
+  model_0.train() # train mode in PyTorch sets all parameters that requires graidents to require gradients
+
+  # 1. Forward pass
+  y_pred = model_0(X_train)
+
+  # 2. Calulcate the loos
+  loss = loss_fn(y_pred, y_train) # torch.L1Loss(input, target)
+
+  # 3. Optimizer zero grad
+  optimizer.zero_grad()
+
+  # 4. Performn backpropagation on the loss wioth respect to the parameters of the model
+  loss.backward()
+
+  # 5. Step the optimizert (perform gradient descent)
+  optimizer.step() # by default how the optimizer changes will accumulate through the loop, so... we have to zero them in step 3 for the next iteration of the loop
+
+
+
+  model_0.eval() # turns off graident tracking
 
