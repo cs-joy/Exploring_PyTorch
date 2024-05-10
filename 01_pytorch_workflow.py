@@ -305,7 +305,7 @@ for epoch in range(epochs):
   optimizer.step() # by default how the optimizer changes will accumulate through the loop, so... we have to zero them in step 3 for the next iteration of the loop
 
   ### Testing
-  model_0.eval() # turns off graident tracking - # `eval()` sets the PyTorch model to evaluation mode, disabling operations like dropout, useful for inference and testing. This method plays a pivotal role in ensuring consistent and reliable model behavior during inference and testing.
+  model_0.eval() # `eval()` sets the PyTorch model to evaluation mode, disabling operations like dropout, useful for inference and testing. This method plays a pivotal role in ensuring consistent and reliable model behavior during inference and testing.
 
 print(model_0.state_dict())
 
@@ -372,15 +372,148 @@ for epoch in range(epochs):
   # 5. Optimizer step
   optimizer.step()
 
-  # Testing
-  model_0.eval()
+  ### Testing
+  model_0.eval() # turns off different settings in the model not needed for evaluation/testing (dropout [https://pytorch.org/docs/stable/nn.html#dropout-layers] / batch norm layers)
+  with torch.inference_mode(): # turns off gradient tracking & a couple more things behind the scenes
+    # 1. Do the forward pass
+    test_pred = model_0(X_test)
 
-  print(model_0.state_dict())
+    # 2. Calulate the loss
+    test_loss = loss_fn(test_pred, y_test)
+
+  # Print out what happening
+  if epoch % 10 == 0:
+    print(f"Epoch: {epoch} | Loss: {loss} | Test loss: {test_loss}")
+
+    # Print out model state_dict()
+    print(model_0.state_dict())
+
+# predictioons
 
 with torch.inference_mode():
   y_pred_new_practice = model_0(X_test)
 
+# old
 plot_predictions(predictions=y_preds_new)
 
+# new prediction with 100 epochs
 plot_predictions(predictions=y_pred_new_practice)
+
+# practice with 150 epochs
+
+torch.manual_seed(42)
+epochs = 150
+for epoch in range(epochs):
+  # set the model in training mode
+  model_0.train()
+
+  # 1. Forward pass
+  y_pred = model_0(X_train)
+
+  # 2. Calculate the loss
+  loss = loss_fn(y_pred, y_train)
+
+  print(f"Loss: {loss}")
+
+  # 3. Optimizer zero grid
+  optimizer.zero_grad()
+
+  # 4. backward
+  loss.backward()
+
+  # 5. Optimizer step
+  optimizer.step()
+
+  ### Testing
+  model_0.eval() # turns off different settings in the model not needed for evaluation/testing (dropout [https://pytorch.org/docs/stable/nn.html#dropout-layers] / batch norm layers)
+  with torch.inference_mode(): # turns off gradient tracking & a couple more things behind the scenes
+    # 1. Do the forward pass
+    test_pred = model_0(X_test)
+
+    # 2. Calulate the loss
+    test_loss = loss_fn(test_pred, y_test)
+
+  # Print out what happening
+  if epoch % 10 == 0:
+    print(f"Epoch: {epoch} | Loss: {loss} | Test loss: {test_loss}")
+
+    # Print out model state_dict()
+    print(model_0.state_dict())
+
+# make some predictions
+with torch.inference_mode():
+  y_pred_150_epochs = model_0(X_test)
+
+# 10 epochs
+plot_predictions(predictions=y_preds_new)
+
+# 100 epochs plot
+plot_predictions(predictions=y_pred_new_practice)
+
+plot_predictions(predictions=y_pred_150_epochs)
+
+# practice with 150 epochs
+
+torch.manual_seed(42)
+epochs = 200
+
+# Track different values
+epoch_count = []
+loss_values = []
+test_loss_values = []
+
+for epoch in range(epochs):
+  # set the model in training mode
+  model_0.train()
+
+  # 1. Forward pass
+  y_pred = model_0(X_train)
+
+  # 2. Calculate the loss
+  loss = loss_fn(y_pred, y_train)
+
+  #print(f"Loss: {loss}")
+
+  # 3. Optimizer zero grid
+  optimizer.zero_grad()
+
+  # 4. backward
+  loss.backward()
+
+  # 5. Optimizer step
+  optimizer.step()
+
+  ### Testing
+  model_0.eval() # turns off different settings in the model not needed for evaluation/testing (dropout [https://pytorch.org/docs/stable/nn.html#dropout-layers] / batch norm layers)
+  with torch.inference_mode(): # turns off gradient tracking & a couple more things behind the scenes
+    # 1. Do the forward pass
+    test_pred = model_0(X_test)
+
+    # 2. Calulate the loss
+    test_loss = loss_fn(test_pred, y_test)
+
+  # Print out what happening
+  if epoch % 10 == 0:
+    epoch_count.append(epoch)
+    loss_values.append(loss)
+    test_loss_values.append(test_loss)
+
+    print(f"Epoch: {epoch} | Loss: {loss} | Test loss: {test_loss}")
+
+    # Print out model state_dict()
+    print(model_0.state_dict())
+
+loss_values, test_loss_values
+
+# convert to numpy, because matplotlib only works with numpy
+import numpy as np
+np.array(torch.tensor(loss_values).cpu().numpy())
+
+# plot the loss curves
+plt.plot(epoch_count, np.array(torch.tensor(loss_values).numpy()), label="Train loss")
+plt.plot(epoch_count, test_loss_values, label="Test loss")
+plt.title("Training and test loss curves")
+plt.ylabel("Loss")
+plt.xlabel("Epochs")
+plt.legend();
 
