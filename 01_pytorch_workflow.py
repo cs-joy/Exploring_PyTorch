@@ -517,3 +517,98 @@ plt.ylabel("Loss")
 plt.xlabel("Epochs")
 plt.legend();
 
+with torch.inference_mode():
+  y_pred_200_epochs = model_0(X_test)
+
+plot_predictions(predictions=y_pred_200_epochs)
+
+"""## Saving a model in PyTorch
+
+There are three main methods you should about for saving and loading models in PyTorch.
+
+1. `torch.save()` - allows you to save a PyTorch object in [Python's pickle](https://docs.python.org/3/library/pickle.html) format
+2. `torch.load()` - allows you to load a PyTorch object
+3. `torch.nn.Module.load_state-dict()` - this allows to load a model's saved state dictionary
+"""
+
+model_0.state_dict()
+
+optimizer.state_dict()
+
+"""#### Extra curriculum
+1. Python pickle: https://docs.python.org/3/library/pickle.html
+2. PyTorch Saving and Loading Models: https://pytorch.org/tutorials/beginner/saving_loading_models.html
+"""
+
+# Saving our PyTorch model
+from pathlib import Path
+
+# 1. Create a models directory
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# 2.  Create a model save path
+MODEL_NAME = "01_pytorch_workflow_model_0.pth" # A common PyTorch convention is to save models using either a `.pt` or `.pth` file extension.
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+#MODEL_SAVE_PATH
+
+# 3. Save the model state dict
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_0.state_dict(),
+           f=MODEL_SAVE_PATH) # https://pytorch.org/docs/stable/generated/torch.save.html
+
+!ls -l models
+
+"""## Loading a PyTorch model
+
+Since we saved our model's `state_dict()` rather than entire model, we'll create a new instance of our model class and load the saved `state_dict()` into that.
+"""
+
+model_0.state_dict()
+
+# # To Load in a saved state_dict we have to instatiate a new instance of our model class
+loaded_model_0 = LinearRegressionModel()
+
+# random values of our model
+#loaded_model_0.state_dict()
+
+# Load the saved state_dict of model_0 (this will update the new instance with updated partamters)
+loaded_model_0 .load_state_dict(torch.load(f=MODEL_SAVE_PATH)) # https://pytorch.org/docs/stable/generated/torch.load.html
+
+loaded_model_0.state_dict()
+
+# Make some predictions with our loaded model
+loaded_model_0.eval()
+
+with torch.inference_mode():
+  loaded_model_preds = loaded_model_0 (X_test)
+loaded_model_preds
+
+# Compare loaded model pred with original model preds
+y_pred_200_epochs == loaded_model_preds
+
+"""## 6. Putting it all together
+
+Let's go back through the steps above and see it all in one place.
+"""
+
+# Import PyTorch and matplotlib
+import torch
+from torch import nn
+import matplotlib.pyplot as plt
+
+# Check pytorch verison
+torch.__version__
+
+"""Create device-agnostic code.
+
+This means if we've got access to a GPU, our code will use it (for potentially faster computing)
+
+If no GPU is available, the code will default to using CPU
+
+# 6.1
+Create
+"""
+
+# 6.1
