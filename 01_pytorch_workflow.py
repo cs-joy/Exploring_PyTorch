@@ -759,3 +759,51 @@ y_preds
 # Check out our model predictions visually
 plot_prediction(predictions=y_preds.cpu())
 
+"""### 6.5 Saving and Loading model"""
+
+from pathlib import Path
+
+# Create directory for saving the model
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents= True, exist_ok= True)
+
+# Create file name of our model and create save path for our model
+MODEL_NAME = "01_pytorch_workflow.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_1.state_dict(),
+           f=MODEL_SAVE_PATH)
+
+# loading the saved model
+# create instance of our model
+loaded_model_1 = LinearRegressionModelV2()
+loaded_model_1.state_dict()
+
+# loading the saved model state_dict() to the new instance we created
+
+loaded_model_1.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+
+# check the parameters, loaded and original model
+loaded_model_1.state_dict(), model_1.state_dict()
+
+# Put the model to device
+loaded_model_1.to(device)
+# check the device
+next(loaded_model_1.parameters()).device
+
+# Evaluate the model
+loaded_model_1.eval()
+
+# predictions
+with torch.inference_mode():
+  loaded_model_1_y_pred = loaded_model_1(X_test)
+
+loaded_model_1_y_pred
+
+# check if loaded and original model predictions are same
+loaded_model_1_y_pred == y_preds
+
+# plot the result for visualize
+plot_prediction(predictions=loaded_model_1_y_pred.cpu())
+
