@@ -151,7 +151,7 @@ y_preds
 
 plot_preds(predictions=y_preds.cpu())
 
-"""### 6.5 Saving and loading trained model\
+"""### 6.5 Saving and loading trained model
 
 There are three main methods you should about for saving and loading models in PyTorch.
 
@@ -174,4 +174,31 @@ MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
 print(f"Saving model to: {MODEL_SAVE_PATH}")
 torch.save(obj=model.state_dict(),
            f= MODEL_SAVE_PATH)
+
+# loading the model
+loaded_model = LinearRegressionModelExercise()
+loaded_model.state_dict()
+
+# load the saved model state_dict
+loaded_model.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+
+# put the loaded model to device
+loaded_model.to(device)
+
+# check parameters
+next(loaded_model.parameters()).device
+
+loaded_model.state_dict()
+
+# Evaluate the loaded model
+loaded_model.eval()
+
+# make predictions
+with torch.inference_mode():
+  y_pred_loaded_model = loaded_model(X_test)
+
+y_pred_loaded_model == y_preds
+
+# visualize
+plot_preds(predictions=y_pred_loaded_model.cpu())
 
