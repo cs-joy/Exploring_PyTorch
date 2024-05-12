@@ -612,7 +612,7 @@ If no GPU is available, the code will default to using CPU
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
-"""# 6.1 Data|"""
+"""# 6.1 Data"""
 
 # Create some data using linear regression formula y=weigh * X + bias
 weight = 0.7
@@ -658,4 +658,104 @@ def plot_prediction (
   plt.legend(prop={"size": 14})
 
 plot_prediction()
+
+"""## 6.2. Create a PyTorch Linear Model
+
+"""
+
+# Create a linear mode lby subclassing nn.Module
+class LinearRegressionModelV2(nn.Module):
+  def __init__(self):
+    super().__init__()
+    # Use nn.Linear() for creatying the model paramters / also called: linear transform, probing layer, fully connected layer, dense layer
+    self.linear_layer = nn.Linear(in_features=1,
+                                  out_features=1) # https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
+
+  def forward(self, x:torch.Tensor) -> torch.Tensor:
+    return self.linear_layer(x)
+
+# Set the manual seed
+torch.manual_seed(42)
+model_1 = LinearRegressionModelV2()
+model_1, model_1.state_dict()
+
+# Check the model current device
+next(model_1.parameters()).device
+
+# Set the model to use the target device
+model_1.to(device)
+next(model_1.parameters()).device
+
+"""### 6.3 Training
+
+For training we need:
+* Loss function
+* Optimizer
+* Training Loop
+* Testing Loop
+"""
+
+# Setpu loss function
+loss_function = nn.L1Loss() # same as MAE
+
+# Setup our optimizer
+optimizer = torch.optim.SGD(params=model_1.parameters(),
+                              lr=0.01, )
+
+# Let's write a training loop
+torch.manual_seed(42)
+
+epochs = 200
+
+# Put data on the target device (device agnostic code for data)
+X_train = X_train.to(device)
+y_train = y_train.to(device)
+X_test = X_test.to(device)
+y_test = y_test.to(device)
+
+for epoch in range(epochs):
+  model_1.train()
+
+  # 1. Forward pass
+  y_pred = model_1(X_train)
+
+  # 2. Calculate the loss
+  loss = loss_function(y_pred, y_train)
+
+  # 3. Optimizer zero grad
+  optimizer.zero_grad()
+
+  # 4. Perform backpropagation
+  loss.backward()
+
+  # 5. Optimizer step
+  optimizer.step()
+
+  ### Testing
+  model_1.eval()
+  with torch.inference_mode():
+    test_pred = model_1(X_test)
+
+    # calculate the loss
+    test_loss = loss_function(test_pred, y_test)
+
+  # Print our what's happening
+  if epoch % 10 == 0:
+    print(f"Epoch: {epoch} | Loss: {loss} | Test loss: {test_loss}")
+
+# evaluating
+model_1.state_dict()
+
+weight, bias
+
+# Turn model into evaluation mode
+model_1.eval()
+# Make predictions on the test data
+with torch.inference_mode():
+  y_preds = model_1(X_test)
+
+y_preds
+
+# Check out our model predictions visually
+plot_prediction(predictions=y_preds.cpu())
 
