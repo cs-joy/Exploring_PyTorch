@@ -151,3 +151,27 @@ y_preds
 
 plot_preds(predictions=y_preds.cpu())
 
+"""### 6.5 Saving and loading trained model\
+
+There are three main methods you should about for saving and loading models in PyTorch.
+
+1. `torch.save()` - allows you to save a PyTorch object in [Python's pickle](https://docs.python.org/3/library/pickle.html) format
+2. `torch.load()` - allows you to load a PyTorch object
+3. `torch.nn.Module.load_state-dict()` - this allows to load a model's saved state dictionary
+"""
+
+from pathlib import Path
+
+# Create model directory
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# create a model save path
+MODEL_NAME = "pytorch_workflow_model_exercise.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+# save the model state dict
+print(f"Saving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model.state_dict(),
+           f= MODEL_SAVE_PATH)
+
